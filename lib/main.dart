@@ -39,7 +39,18 @@ class _LogoAppState extends State<LogoApp> with SingleTickerProviderStateMixin {
     //tween animação vai variar o nimero de 0 a 300 enquando o controller vai variar de 0 a 1
     //tween é uma animaçao com inicio e fim
     animacao = Tween<double>(begin: 0, end: 300).animate(controller);
-    ;
+
+    //para controlar os estados da animação
+    animacao.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        //cheguei no 1
+        controller.reverse();
+      } else if (status == AnimationStatus.dismissed) {
+        //cheguei no 0
+        controller.forward();
+      }
+    });
+
     //animação tem que dar o start e atializar a tela
     //estes .. é um parametros de cascata ele espera o primeiro terminar e depois faz o proximo
     //..addListener(() {
@@ -69,6 +80,7 @@ class _LogoAppState extends State<LogoApp> with SingleTickerProviderStateMixin {
 class AnimacaoLogo extends AnimatedWidget {
   //a animação que chegar vai ser enviada para o super
   //este super é o contrutor do AnimatedWidget
+  //super(listenable: animacao) com isso toda vez que a nimação atualizar a tela vai ser refeita
   AnimacaoLogo(Animation<double> animacao) : super(listenable: animacao);
 
   @override
