@@ -72,10 +72,15 @@ class _LogoAppState extends State<LogoApp> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return AnimacaoLogo(animacao);
+    //return AnimacaoLogo(animacao);
+    return AumentarDiminuirFilho(
+      child_que_vai_animado: LogoWidget(),
+      animacao_crescer_diminuir: animacao,
+    );
   }
 }
 
+/*
 //isso aqui serva para remover o setState
 class AnimacaoLogo extends AnimatedWidget {
   //a animação que chegar vai ser enviada para o super
@@ -95,5 +100,44 @@ class AnimacaoLogo extends AnimatedWidget {
         child: FlutterLogo(),
       ),
     );
+  }
+}
+*/
+
+class LogoWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      //pode ser qualquer coisa que ele ia aumentar e diminuir
+      child: FlutterLogo(),
+    );
+  }
+}
+
+//animação de ficar aumentando e diminuindo
+class AumentarDiminuirFilho extends StatelessWidget {
+  final Widget child_que_vai_animado;
+  final Animation<double> animacao_crescer_diminuir;
+
+  AumentarDiminuirFilho({this.child_que_vai_animado, this.animacao_crescer_diminuir});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        child: Center(
+      //animação builder anima apanas o widget que é passado por parametro
+      child: AnimatedBuilder(
+        animation: animacao_crescer_diminuir,
+        child: child_que_vai_animado,
+        builder: (context, child) {
+          //Container que vai crescer e diminuir
+          return Container(
+            height: animacao_crescer_diminuir.value,
+            width: animacao_crescer_diminuir.value,
+            child: child_que_vai_animado,
+          );
+        },
+      ),
+    ));
   }
 }
