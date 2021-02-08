@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+//void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
@@ -35,8 +35,10 @@ class _LogoAppState extends State<LogoApp> with SingleTickerProviderStateMixin {
       duration: Duration(seconds: 2),
     );
 
-    //usou Curve pois assim os numeros dos tamanhos sai aleatório. não vai sair 0.1,0.2,0.3,0.4. vai sair 01.2,0.5,0.8
-    animacao = CurvedAnimation(parent: controller, curve: Curves.elasticOut);
+    //inicializar o animation
+    //tween animação vai variar o nimero de 0 a 300 enquando o controller vai variar de 0 a 1
+    //tween é uma animaçao com inicio e fim
+    animacao = Tween<double>(begin: 0, end: 300).animate(controller);
 
     //para controlar os estados da animação
     animacao.addStatusListener((status) {
@@ -49,11 +51,13 @@ class _LogoAppState extends State<LogoApp> with SingleTickerProviderStateMixin {
       }
     });
 
-    //printar toda vez que o valor muda
-    //toda vez que ele muda esta animação ele atualiza a nossa aplicação
-    animacao.addListener(() {
-      print(animacao.value);
-    });
+    //animação tem que dar o start e atializar a tela
+    //estes .. é um parametros de cascata ele espera o primeiro terminar e depois faz o proximo
+    //..addListener(() {
+    //foi removido o setstate pois foi crido a classAnimacaoLogo
+    //chama esta função sempre que tiver uma modificaçao na animação
+    //setState(() {});
+    //});
 
     //iniciar a animação
     controller.forward();
@@ -76,6 +80,30 @@ class _LogoAppState extends State<LogoApp> with SingleTickerProviderStateMixin {
   }
 }
 
+/*
+//isso aqui serva para remover o setState
+class AnimacaoLogo extends AnimatedWidget {
+  //a animação que chegar vai ser enviada para o super
+  //este super é o contrutor do AnimatedWidget
+  //super(listenable: animacao) com isso toda vez que a nimação atualizar a tela vai ser refeita
+  AnimacaoLogo(Animation<double> animacao) : super(listenable: animacao);
+
+  @override
+  Widget build(BuildContext context) {
+    //listenable precisa de um tipo
+    final Animation<double> animacao_local = listenable;
+
+    return Center(
+      child: Container(
+        height: animacao_local.value,
+        width: animacao_local.value,
+        child: FlutterLogo(),
+      ),
+    );
+  }
+}
+*/
+
 class LogoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -91,35 +119,26 @@ class AumentarDiminuirFilho extends StatelessWidget {
   final Widget child_que_vai_animado;
   final Animation<double> animacao_crescer_diminuir;
 
-  //desenhado somente a curva de animação
-  final Tween<double> tamanho_tween = Tween<double>(begin: 0, end: 300);
-  final Tween<double> opacidade_tween = Tween(begin: 0.1, end: 1);
-
   AumentarDiminuirFilho({this.child_que_vai_animado, this.animacao_crescer_diminuir});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: Center(
-      //animação builder anima apanas o widget que é passado por parametro
-      child: AnimatedBuilder(
-        animation: animacao_crescer_diminuir,
-        child: child_que_vai_animado,
-        builder: (context, child) {
-          //Container que vai crescer e diminuir
-          return Opacity(
-            //evaluate é um valor de 0 a 1 e este será convertido de uma valor de 0.1 a 1
-            //clamp limita o tamanho dos limites que podem ser atingidos
-            opacity: opacidade_tween.evaluate(animacao_crescer_diminuir).clamp(0, 1.0),
-            child: Container(
-              //evaluate é um valor de 0 a 1 e este será convertido de uma valor de 0 a 300
-              height: tamanho_tween.evaluate(animacao_crescer_diminuir),
-              width: tamanho_tween.evaluate(animacao_crescer_diminuir),
+      child: Center(
+        //animação builder anima apanas o widget que é passado por parametro
+        child: AnimatedBuilder(
+          animation: animacao_crescer_diminuir,
+          child: child_que_vai_animado,
+          builder: (context, child) {
+            //Container que vai crescer e diminuir
+            return Container(
+              height: animacao_crescer_diminuir.value,
+              width: animacao_crescer_diminuir.value,
               child: child_que_vai_animado,
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
-    ));
+    );
   }
 }
